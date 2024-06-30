@@ -1,8 +1,12 @@
 <template>
   <div class="container" id="container">
-    <input type="text" v-model="inputValue" class="input">
+    <input type="text" v-model="inputValue" @input="handleInput" class="input">
     <div class="buttons" @click="handleButton">
-      <Button v-for="btn in buttons" :key="btn.value" :buttonValue="btn.value" :buttonType="btn.type" />
+      <Button v-for="btn in buttons"
+              :key="btn.value"
+              :buttonValue="btn.value"
+              :buttonType="btn.type"
+      />
     </div>
   </div>
 </template>
@@ -30,30 +34,37 @@ const handleButton = (event) => {
 
   switch (buttonType) {
     case 'clear':
-      console.log('clear   -', inputValue.value);
       inputValue.value = '';
-      console.log('clear   -', inputValue.value);
-      console.log('--------------');
-      break;
+      return;
     case 'result':
-      console.log('result  -', inputValue.value);
       inputValue.value = evaluateExpression(inputValue.value);
-      console.log('result  -', inputValue.value);
-      console.log('--------------');
-      break;
+      return;
     case 'delete':
-      console.log('delete  -', inputValue.value);
       inputValue.value = inputValue.value.slice(0, -1);
-      console.log('delete  -', inputValue.value);
-      console.log('--------------');
-      break;
-    default:
-      console.log('default -', inputValue.value);
+      return;
+    case 'operator':
+      const lastChar = inputValue.value.at(-1);
+      if ( lastChar === '.') {
+        inputValue.value = inputValue.value.slice(0, -1) + buttonValue;
+        return;
+      }
+      if ( lastChar === '*' && buttonValue === '/' || lastChar === '/' && buttonValue === '*' ) {
+        inputValue.value = inputValue.value.slice(0, -1) + buttonValue;
+        return;
+      }
       inputValue.value += buttonValue;
-      console.log('default -', inputValue.value);
-      console.log('--------------');
-      break;
+      return;
+    default:
+      inputValue.value += buttonValue;
+      return;
   }
+}
+
+const handleInput = (event: InputEvent) => {
+  const input = event.target as HTMLInputElement;
+  const sanitizedValue = input.value.replace(/[^\d+*/.-]/g, '');
+  input.value = sanitizedValue;
+  inputValue.value = sanitizedValue;
 }
 
 const evaluateExpression = (expression: string): string => {
