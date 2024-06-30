@@ -26,9 +26,9 @@ export type typeButton = {
 
 let inputValue = ref<typeInputValue>('');
 
-const handleButton = (event) => {
-  const buttonValue = event.target.getAttribute('data-value');
-  const buttonType = event.target.getAttribute('data-type');
+const handleButton = (event: MouseEvent) => {
+  const buttonValue = (event.target as HTMLElement).getAttribute('data-value');
+  const buttonType = (event.target as HTMLElement).getAttribute('data-type');
 
   if (!buttonValue || !buttonType) return;
 
@@ -43,12 +43,12 @@ const handleButton = (event) => {
       inputValue.value = inputValue.value.slice(0, -1);
       return;
     case 'operator':
-      const lastChar = inputValue.value.at(-1);
-      if ( lastChar === '.') {
+      const lastChar = inputValue.value.slice(-1);
+      if (lastChar === '.') {
         inputValue.value = inputValue.value.slice(0, -1) + buttonValue;
         return;
       }
-      if ( lastChar === '*' && buttonValue === '/' || lastChar === '/' && buttonValue === '*' ) {
+      if ((lastChar === '*' && buttonValue === '/') || (lastChar === '/' && buttonValue === '*')) {
         inputValue.value = inputValue.value.slice(0, -1) + buttonValue;
         return;
       }
@@ -60,10 +60,9 @@ const handleButton = (event) => {
   }
 }
 
-const handleInput = (event: InputEvent) => {
-  const input = event.target as HTMLInputElement;
-  const sanitizedValue = input.value.replace(/[^\d+*/.-]/g, '');
-  input.value = sanitizedValue;
+const handleInput = (event: any) => {
+  const currInput = event.target as HTMLInputElement;
+  const sanitizedValue = currInput.value.replace(/[^\d+*/.-]/g, '');
   inputValue.value = sanitizedValue;
 }
 
